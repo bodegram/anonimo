@@ -3,4 +3,65 @@
 <title>Messages</title>
 {% endblock title %}
 {% block content %}
+<style>
+    .card{
+        width: 50%;
+        margin: auto;
+        background-color: transparent;
+        border: solid 1px;
+    }
+    @media screen and (max-width:768px) {
+        .card{
+            width: 100%;
+        }
+    }
+</style>
+<section>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="h5 text-light">My Messages</div>
+                        <div class="text-light">View messages</div>
+                    </div>
+
+                    {% for message in messages %}
+                    <div class="py-3 text-danger bg-light rounded-top rounded-bottom text-center mb-3" style="font-size: small;font-weight:bold">
+                       {{message}}
+                    </div>
+                    {% endfor %}
+
+                    {% if myMessages %}
+                    <div>
+                       {% for myMessage in myMessages %}
+                       <div class="py-2 px-2 mb-3 text-black" style="border: solid 1px; background-color:white;border-right:solid rgb(160, 160, 16) 10px;font-family:monospace">
+                          <div>Message: {{myMessage.message}}</div>
+                          <div>Anonymous: {{myMessage.date_added}}</div>
+                          <div><a href="{% url 'deleteMessage' myMessage.id %}" class="btn btn-sm btn-warning" style="text-decoration: none;color:black;font-size:small">delete</a></div>
+                       </div>
+                       {% endfor %}
+                    </div>
+                    <div class="text-center py-2">
+                        <a href="{% url 'userMessages' %}?page=1" class="btn btn-sm btn-warning">&laquo</a>
+                        {% if myMessages.has_previous %}
+                        <a href="{% url 'userMessages' %}?page={{myMessages.previous_page_number}}" class="btn btn-sm btn-warning">prev</a>
+                        {% endif %}
+                        {% if myMessages.has_next %}
+                        <a href="{% url 'userMessages' %}?page={{myMessages.next_page_number}}" class="btn btn-sm btn-warning">next</a>
+                        {% endif %}
+                        <a href="{% url 'userMessages' %}?page={{myMessages.paginator.num_pages}}" class="btn btn-sm btn-warning">&raquo</a>
+                    </div>
+                    {% else %}
+                    <div class="text-light text-center">No messages currently</div>
+                    {% endif %}
+                    <hr>
+                    <div class="mt-5"><a href="{% url 'dashboard' %}" class="btn btn-sm btn-warning w-100">Go back</a></div>
+
+                   
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock content %}

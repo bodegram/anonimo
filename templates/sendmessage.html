@@ -3,4 +3,40 @@
 <title>Send message to {{request.GET.user}}</title>
 {% endblock title %}
 {% block content %}
+<style>
+    .card{
+        width: 50%;
+        margin: auto;
+        background-color: transparent;
+        border: solid 1px;
+    }
+
+    @media screen and (max-width:768px) {
+        .card{
+            width: 80%;
+        }
+    }
+</style>
+<section>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div>
+                    <div class="h5 text-light">Send message to {{request.GET.user}}</div>
+                    <div>
+                        <form action="" method="post">{% csrf_token %}
+                            {% for message in messages %}
+                    <div class="py-3 text-danger bg-light rounded-top rounded-bottom text-center mb-3" style="font-size: small;font-weight:bold">
+                       {{message}}
+                    </div>
+                    {% endfor %}
+                            <textarea name="msg" id="" cols="30" rows="10" class="w-100" style="outline: none;font-size:small; border:solid 1px"></textarea>
+                            <button type="submit" class="btn btn-sm btn-warning">Send</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock content %}

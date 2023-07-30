@@ -32,8 +32,11 @@ urlpatterns = [
     path('change-email', views.changeEmail, name="changeEmail"),
     path('delete-message/<int:id>', views.deleteMessage, name="deleteMessage"),
     path('messages', views.userMessages, name="userMessages"),
-    path('messages/<int:id>', views.userMessage, name="userMessage"),
-    path('activation-email/<uidb64>/<token>', views.activate_user_account, name="activationEmail")
+    path('activation-email/<uidb64>/<token>', views.activate_user_account, name="activationEmail"),
+    path('dashboard', views.dashboard, name="dashboard"),
+    path('profile', views.profile, name="profile"),
+    path('reset-password', views.reset_password, name="reset_password"),
+    path('reset-token-confirmation', views.reset_token_confirmation, name="reset_token_confirmation")
     
     
 ]

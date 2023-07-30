@@ -9,6 +9,8 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from random import randint
 
 # Create your views here.
 def register(request):
@@ -23,7 +25,8 @@ def register(request):
         if CustomUser.objects.filter(username=username).exists():
             messages.error(request, 'Username in use')
             
-        user = CustomUser(username=username, email=email, password=password)
+        user = CustomUser(username=username, email=email)
+        user.set_password(password)
         user.is_active = False
         user.save()
         
@@ -39,8 +42,11 @@ def register(request):
             'token': token,
             'domain': current_site
         })
-        email = EmailMessage(mail_subject, message, to=[email])
-        messages.success(request, 'Activation Link has been sent to your mail')
+        email = EmailMessage(mail_subject, message, 'myanonimomessage@gmail.com' , [email])
+        email.content_subtype = "html"
+        if email:
+            email.send()
+            messages.success(request, 'Activation Link has been sent to your mail')
         
     return render(request, 'register.html')
         
@@ -54,43 +60,44 @@ def login(request):
         if user is not None:
             auth.login(request, user)
             
+            
             if 'next' in request.GET:
                 return redirect(next)
+            
+            
+            return redirect("dashboard")
             
         else:
             messages.error(request, 'Incorrect email address or password')
             
     return render(request, 'login.html')
+
+
+@login_required(login_url='/login')           
+def dashboard(request):
+    return render(request, 'dashboard.html')
             
-@login_required(login_url='/login/')           
+@login_required(login_url='/login')           
 def userMessages(request):
-    p = Paginator(UserMessage.objects.filter(user=request.user), 10)
+    p = Paginator(UserMessage.objects.filter(user=request.user).order_by('-date_added'), 10)
     page = request.GET.get("page")
     myMessages = p.get_page(page)
     
     return render(request, 'messages.html', {"myMessages" : myMessages})
     
-@login_required(login_url='/login/')
-def userMessage(request, id):
-    try:
-        myMessage = UserMessage.objects.filter(user=request.user).get(id=id)
-        myMessage.status = True
-        myMessage.save()
-        
-    except:
-        return render(request, '404.html')
     
-    return render(request, 'message.html', {"myMessage" : myMessage})
- 
-    
-@login_required(login_url='/login/')  
+@login_required(login_url='/login')  
 def deleteMessage(request, id):
-    message = UserMessage.objects.get(id=id) 
+    try:
+        message = UserMessage.objects.filter(user=request.user).get(id=id) 
+    except UserMessage.DoesNotExist:
+        return render(request, '404.html')
     message.delete()
-    return redirect("messages")
+    messages.success(request, 'Message deleted')
+    return redirect("userMessages")
 
 
-@login_required(login_url='/login/')   
+@login_required(login_url='/login')   
 def changeEmail(request):
     if request.method == "POST":
         new_email = request.POST.get("new_email")
@@ -110,19 +117,21 @@ def changeEmail(request):
     return render(request, 'changeemail.html')
             
             
-@login_required(login_url='/login/')   
+@login_required(login_url='/login')   
 def changeUsername(request):
     if request.method == "POST":
         new_userrname = request.POST.get("new_username")
         password = request.POST.get("password")
         user = CustomUser.objects.get(email=request.user)
         if user.check_password(password):
+            
             if CustomUser.objects.filter(username=new_userrname).exists():
                 messages.error(request, 'Username already in use')
                 
-            user.username = new_userrname
-            user.save()
-            messages.success(request, 'Username successfully updated')
+            else:
+                 user.username = new_userrname
+                 user.save()
+                 messages.success(request, 'Username successfully updated')
         
         else:
             messages.error(request, 'Incorrect password')    
@@ -136,14 +145,14 @@ def sendMessage(request):
         msg = request.POST.get("msg")
         username = request.GET.get("user")
         user= CustomUser.objects.get(username=username)
-        UserMessage.objects.create(message=msg, user=user.email)
+        UserMessage.objects.create(message=msg, user=user)
         messages.success(request, 'Message successfully sent')
         
     return render(request, 'sendmessage.html')
         
         
         
-@login_required(login_url='/login/')       
+@login_required(login_url='/login')       
 def changePassword(request):
     if request.method == "POST":
         old_password = request.POST.get("old_password")
@@ -155,6 +164,7 @@ def changePassword(request):
             if user.check_password(old_password):
                 user.set_password(new_password)
                 user.save()
+                messages.success(request, 'Password updated')
                 
                 
             else:
@@ -166,7 +176,7 @@ def changePassword(request):
             
     return render(request, 'changepassword.html')
             
-@login_required(login_url='/login/')           
+@login_required(login_url='/login')           
 def editProfile(request):
     if request.method == "POST":
         first_name = request.POST.get("first_name")
@@ -180,16 +190,16 @@ def editProfile(request):
         
     return render(request, 'editprofile.html')
     
-@login_required(login_url='/login/')  
+@login_required(login_url='/login')  
 def logout(request):
     auth.logout(request)
     return redirect("login")
 
-@login_required(login_url='/login/')
+@login_required(login_url='/login')
 def settings(request):
     return render(request, 'settings.html')
 
-@login_required(login_url='/login/')
+@login_required(login_url='/login')
 def notifications(request):
     p = Paginator(Notification.objects.filter(user=request.user), 15)
     page = request.GET.get("page")
@@ -214,3 +224,63 @@ def activate_user_account(request, token, uidb64):
     except:
         return HttpResponse('Bad Request')
     
+@login_required(login_url='/login')   
+def profile(request):
+    return render(request, 'profile.html')
+    
+    
+
+def reset_password(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        try:
+            user= CustomUser.objects.get(email=email)
+            
+        except CustomUser.DoesNotExist:
+            return render(request, '404.html')
+        if CustomUser.objects.filter(email=user).exists():
+            if Token.objects.filter(user=user).exists:
+                token = Token.objects.filter(user=user)
+                token.delete()
+                
+                token = Token(user=user, code=randint(100000, 900000))
+                token.save()
+                email_message = EmailMessage('Password Reset', f'Your code is {token.code}.',  'myanonimomessage@gmail.com', [email] )
+                email_message.send()
+                messages.success(request, 'Enter code sent to your mail')
+                return render(request, 'reset_token_confirmation.html')
+                
+            
+            token = Token(user=user, code=randint(100000, 900000))
+            token.save()
+            email_message = EmailMessage('Password Reset', f'Your code is {token.code}.', [email] )
+            email_message.send()
+            messages.success(request, 'Enter code sent to your mail')
+            return render(request, 'reset_token_confirmation.html', {"email": user})
+            
+        
+        else:
+            messages.error(request, 'Account does not exist')
+            
+    return render(request, 'reset_password.html')
+            
+            
+            
+def reset_token_confirmation(request):
+    if request.method == "POST":
+        email = request.POST.get("email")
+        code = request.POST.get("code")
+        user= CustomUser.objects.get(email=email)
+        user_code = Token.objects.get(user=user)
+        if code == user_code:
+            default_password = randint(10000, 90000)
+            user= CustomUser.objects.get(email=user)
+            user.set_password(default_password)
+            user.save()
+            email = EmailMessage('New Password Reset', f'Your new password is {default_password}, kindly ensure you change it after logging in.', 'myanonimomessage@gmail.com', [email] )
+            email.send()
+            return HttpResponse(request, 'A default password has been sent to your mail')
+            
+            
+        else:
+            return HttpResponse(request, 'An error occurred')

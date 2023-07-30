@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            box-sizing: border-box;
+            margin: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body style="background-color: black;color:white">
+    <div>
+        <div style="margin-bottom: 20px;padding:10px;background-color: yellow;"><h3>WELCOME NEW USER</h3></div>
+        <div>We are happy to have you {{user}}, kindly use this link below to activate your account.</div>
+        <div><a href="http://{{domain}}{% url 'activationEmail' uidb64=uid token=token %}">Please activate your account</a></div>
+    </div>
+</body>
+</html>

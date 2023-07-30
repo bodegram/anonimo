@@ -3,4 +3,38 @@
 <title>Settings - Anonimo</title>
 {% endblock title %}
 {% block content %}
+<style>
+    .card{
+        width: 50%;
+        margin: auto;
+        background-color: transparent;
+        border: solid 1px;
+    }
+    @media screen and (max-width:768px) {
+        .card{
+            width: 80%;
+        }
+    }
+</style>
+<section>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="h5 text-light"><i class="bi bi-gear"></i> Account Settings</div>
+                        <div class="text-light">Update your account</div>
+                    </div>
+                    <div>
+                        <div class="mb-3"><a href="{% url 'editProfile' %}" class="btn btn-sm btn-warning w-100">Edit Profile</a></div>
+                        <div class="mb-3"><a href="{% url 'changeEmail' %}" class="btn btn-sm btn-warning w-100">Change Email</a></div>
+                        <div class="mb-3"><a href="{% url 'changePassword' %}" class="btn btn-sm btn-warning w-100">Change Password</a></div>
+                        <div class="mb-3"><a href="{% url 'changeUsername' %}" class="btn btn-sm btn-warning w-100">Change Username</a></div><hr>
+                        <div class="mt-5"><a href="{% url 'dashboard' %}" class="btn btn-sm btn-warning w-100">Go back</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock content %}

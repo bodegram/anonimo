@@ -3,4 +3,57 @@
 <title>Change Email Address - Settings</title>
 {% endblock title %}
 {% block content %}
+<style>
+    label{
+        color: white;
+    }
+   
+    .card{
+        width: 50%;
+        margin: auto;
+        background-color: transparent;
+        border: solid 1px;
+    }
+    @media screen and (max-width:768px) {
+        .card{
+            width: 80%;
+        }
+    }
+</style>
+<section>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="h5 text-light">Update Email Address</div>
+                        <div class="text-light">Change your email address</div>
+                    </div>
+                    <div>
+                       <form action="" method="post">{% csrf_token %}
+                        {% for message in messages %}
+                    <div class="py-3 text-danger bg-light rounded-top rounded-bottom text-center mb-3" style="font-size: small;font-weight:bold">
+                       {{message}}
+                    </div>
+                    {% endfor %}
+                           <div class="mb-3">
+                            <label for="">New Email</label>
+                            <input type="email" name="new_email" value="{% if request.POST %}{{request.POST.new_email}}{% endif %}" class="form-control" id="">
+                           </div>
+                           <div class="mb-3">
+                            <label for="">Password</label>
+                            <input type="password" name="password" class="form-control" id="">
+                           </div>
+                           <div>
+                            <button class="btn btn-sm btn-warning" type="submit">Save</button>
+                           </div>
+                       </form>
+                    </div><hr>
+                    <div class="mt-3"><a href="{% url 'dashboard' %}" class="btn btn-sm btn-warning w-100">Go to dashboard</a></div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock content %}

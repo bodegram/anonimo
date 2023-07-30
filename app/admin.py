@@ -5,3 +5,4 @@ from .models import *
 admin.site.register(CustomUser)
 admin.site.register(UserMessage)
 admin.site.register(Notification)
+admin.site.register(Token)

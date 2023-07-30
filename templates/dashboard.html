@@ -3,4 +3,45 @@
 <title>My Account  | {{user.username}}</title>
 {% endblock title %}
 {% block content %}
+<style>
+    .card{
+        width: 50%;
+        margin: auto;
+        background-color: transparent;
+        border: solid 1px;
+    }
+    @media screen and (max-width:768px) {
+        .card{
+            width: 80%;
+        }
+    }
+</style>
+<section>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <div class="h5 text-light">Welcome {{user.username}}</div>
+                        <div><a id="link" href="{% url 'sendMessage'  %}?user={{user.username}}" target="_blank" style="color: white;">http://localhost:8000/send-message?user={{user.username}}</a> <span onclick="copylink()" class="text-white"><i class="bi bi-clipboard"></i></span></div>
+                    </div>
+                    <div>
+                        <div class="mb-3"><a href="{% url 'userMessages' %}" class="btn btn-sm btn-warning w-100"><i class="bi bi-chat-dots"></i> View Messages</a></div>
+                        <div class="mb-3"><a href="{% url 'profile' %}" class="btn btn-sm btn-warning w-100"><i class="bi bi-person-circle"></i> View Profile</a></div>
+                        <div class="mb-3"><a href="https://wa.me/?text=http://localhost:8000/send-message?user={{user.username}}" class="btn btn-sm btn-warning w-100"><i class="bi bi-share"></i> Share</a></div>
+                        <div class="mb-3"><a href="{% url 'settings' %}" class="btn btn-sm btn-warning w-100"><i class="bi bi-gear"></i> Settings</a></div>
+                        <div class="mb-3"><a href="{% url 'logout' %}" class="btn btn-sm btn-warning w-100"><i class="bi bi-box-arrow-in-left"></i> Logout</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    function copylink(){
+      const link = document.getElementById("link")
+      navigator.clipboard.writeText(link)
+      alert("Link copied")
+    }
+</script>
 {% endblock content %}
