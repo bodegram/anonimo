@@ -38,10 +38,7 @@ urlpatterns = [
     path('activation-email/<uidb64>/<token>', views.activate_user_account, name="activationEmail"),
     path('dashboard', views.dashboard, name="dashboard"),
     path('profile', views.profile, name="profile"),
-    path('reset-password', auth_views.PasswordResetView().as_view(), name="reset_password"),
-    path('reset-password-done/<uidb64>/<token>', auth_views.PasswordResetDoneView().as_view(), name="reset_password_done"),
-    path('reset-password-confirm', auth_views.PasswordResetConfirmView.as_view(), name="reset_password_confirm"),
-    path('reset-password-complete', auth_views.PasswordResetCompleteView.as_view(), name="reset_password_complete"),
+   
     
     
     
