@@ -17,6 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from app import views
+from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,8 +38,11 @@ urlpatterns = [
     path('activation-email/<uidb64>/<token>', views.activate_user_account, name="activationEmail"),
     path('dashboard', views.dashboard, name="dashboard"),
     path('profile', views.profile, name="profile"),
-    path('reset-password', views.reset_password, name="reset_password"),
-    path('reset-token-confirmation', views.reset_token_confirmation, name="reset_token_confirmation")
+    path('reset-password', auth_views.PasswordResetView().as_view(), name="reset_password"),
+    path('reset-password-done/<uidb64>/<token>', auth_views.PasswordResetDoneView().as_view(), name="reset_password_done"),
+    path('reset-password-confirm', auth_views.PasswordResetConfirmView.as_view(), name="reset_password_confirm"),
+    path('reset-password-complete', auth_views.PasswordResetCompleteView.as_view(), name="reset_password_complete"),
     
     
-]
+    
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

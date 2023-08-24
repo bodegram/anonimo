@@ -59,6 +59,8 @@ def login(request):
         next = request.GET.get("next")
         if user is not None:
             auth.login(request, user)
+            email_message = EmailMessage('Login Activity Found', f'There was a login activity found on your account. If you are not the one that initiated the login, kindly reach out to us immediaitely.',  'myanonimomessage@gmail.com', [email] )
+            email_message.send()
             
             
             if 'next' in request.GET:
@@ -75,7 +77,9 @@ def login(request):
 
 @login_required(login_url='/login')           
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    current_site = get_current_site(request)
+    #print(current_site)
+    return render(request, 'dashboard.html', {"domain": current_site})
             
 @login_required(login_url='/login')           
 def userMessages(request):
@@ -110,6 +114,8 @@ def changeEmail(request):
             user.email = new_email
             user.save()
             messages.success(request, 'Email address successfully updated')
+            email_message = EmailMessage('Email Update', f'{request.user.username}, you successfully updated your email address. Enjoy the exclusive features of our websites.',  'myanonimomessage@gmail.com', [f'{request.user.email}'] )
+            email_message.send()
         
         else:
             messages.error(request, 'Incorrect password')
@@ -132,6 +138,8 @@ def changeUsername(request):
                  user.username = new_userrname
                  user.save()
                  messages.success(request, 'Username successfully updated')
+                 email_message = EmailMessage('Username Update', f'{request.user.username}, you successfully updated your username. Enjoy the exclusive features of our websites.',  'myanonimomessage@gmail.com', [f'{request.user.email}'] )
+                 email_message.send()
         
         else:
             messages.error(request, 'Incorrect password')    
@@ -165,6 +173,8 @@ def changePassword(request):
                 user.set_password(new_password)
                 user.save()
                 messages.success(request, 'Password updated')
+                email_message = EmailMessage('Password Update', f'{request.user.username}, you successfully updated your password. Enjoy the exclusive features of our websites.',  'myanonimomessage@gmail.com', [f'{request.user.email}'] )
+                email_message.send()
                 
                 
             else:
@@ -228,59 +238,4 @@ def activate_user_account(request, token, uidb64):
 def profile(request):
     return render(request, 'profile.html')
     
-    
-
-def reset_password(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
-        try:
-            user= CustomUser.objects.get(email=email)
-            
-        except CustomUser.DoesNotExist:
-            return render(request, '404.html')
-        if CustomUser.objects.filter(email=user).exists():
-            if Token.objects.filter(user=user).exists:
-                token = Token.objects.filter(user=user)
-                token.delete()
-                
-                token = Token(user=user, code=randint(100000, 900000))
-                token.save()
-                email_message = EmailMessage('Password Reset', f'Your code is {token.code}.',  'myanonimomessage@gmail.com', [email] )
-                email_message.send()
-                messages.success(request, 'Enter code sent to your mail')
-                return render(request, 'reset_token_confirmation.html')
-                
-            
-            token = Token(user=user, code=randint(100000, 900000))
-            token.save()
-            email_message = EmailMessage('Password Reset', f'Your code is {token.code}.', [email] )
-            email_message.send()
-            messages.success(request, 'Enter code sent to your mail')
-            return render(request, 'reset_token_confirmation.html', {"email": user})
-            
-        
-        else:
-            messages.error(request, 'Account does not exist')
-            
-    return render(request, 'reset_password.html')
-            
-            
-            
-def reset_token_confirmation(request):
-    if request.method == "POST":
-        email = request.POST.get("email")
-        code = request.POST.get("code")
-        user= CustomUser.objects.get(email=email)
-        user_code = Token.objects.get(user=user)
-        if code == user_code:
-            default_password = randint(10000, 90000)
-            user= CustomUser.objects.get(email=user)
-            user.set_password(default_password)
-            user.save()
-            email = EmailMessage('New Password Reset', f'Your new password is {default_password}, kindly ensure you change it after logging in.', 'myanonimomessage@gmail.com', [email] )
-            email.send()
-            return HttpResponse(request, 'A default password has been sent to your mail')
-            
-            
-        else:
-            return HttpResponse(request, 'An error occurred')
+  
