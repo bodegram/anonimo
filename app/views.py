@@ -59,8 +59,8 @@ def login(request):
         next = request.GET.get("next")
         if user is not None:
             auth.login(request, user)
-            email_message = EmailMessage('Login Activity Found', f'There was a login activity found on your account. If you are not the one that initiated the login, kindly reach out to us immediaitely.',  'myanonimomessage@gmail.com', [email] )
-            email_message.send()
+            #email_message = EmailMessage('Login Activity Found', f'There was a login activity found on your account. If you are not the one that initiated the login, kindly reach out to us immediaitely.',  'myanonimomessage@gmail.com', [email] )
+            #email_message.send()
             
             
             if 'next' in request.GET:
