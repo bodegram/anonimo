@@ -29,7 +29,9 @@ def register(request):
         user.set_password(password)
         user.is_active = False
         user.save()
-        
+        messages.success(request, 'Account successfully created')
+        '''
+       
         current_site = get_current_site(request)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = email_verification_token.make_token(user)
@@ -47,6 +49,8 @@ def register(request):
         if email:
             email.send()
             messages.success(request, 'Activation Link has been sent to your mail')
+            
+        '''
         
     return render(request, 'register.html')
         
@@ -217,7 +221,7 @@ def notifications(request):
     return render(request, 'notifications.html', {"notifications": user_notifications})
 
 
-
+'''
 def activate_user_account(request, token, uidb64):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -234,6 +238,8 @@ def activate_user_account(request, token, uidb64):
     except:
         return HttpResponse('Bad Request')
     
+'''
+
 @login_required(login_url='/login')   
 def profile(request):
     return render(request, 'profile.html')
