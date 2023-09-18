@@ -22,14 +22,15 @@ def register(request):
         if CustomUser.objects.filter(email=email).exists():
             messages.error(request, 'Email address in use')
             
-        if CustomUser.objects.filter(username=username).exists():
+        elif CustomUser.objects.filter(username=username).exists():
             messages.error(request, 'Username in use')
             
-        user = CustomUser(username=username, email=email)
-        user.set_password(password)
-        user.is_active = False
-        user.save()
-        messages.success(request, 'Account successfully created')
+        else:
+             user = CustomUser(username=username, email=email)
+             user.set_password(password)
+             user.is_active = False
+             user.save()
+             messages.success(request, 'Account successfully created')
         '''
        
         current_site = get_current_site(request)
